@@ -1,0 +1,335 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "sdlc_control_plane/v1alpha1/namespace_service.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "NamespaceService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1alpha1/namespaces": {
+      "get": {
+        "summary": "List/Search Namespaces",
+        "operationId": "NamespaceService_ListNamespaces",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1ListNamespacesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "parent",
+            "description": "Parent namespace to list children from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "For pagination",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "For pagination",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "description": "Filter expression based on labels or name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NamespaceService"
+        ]
+      },
+      "post": {
+        "summary": "Create Namespace",
+        "operationId": "NamespaceService_CreateNamespace",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1Namespace"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alpha1Namespace"
+            }
+          }
+        ],
+        "tags": [
+          "NamespaceService"
+        ]
+      }
+    },
+    "/v1alpha1/namespaces/{namespace.name}": {
+      "patch": {
+        "summary": "Update Namespace",
+        "operationId": "NamespaceService_UpdateNamespace",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1Namespace"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace.name",
+            "description": "e.g., \"acme/go/foo/bar\"",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "namespace",
+            "description": "Namespace message",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "displayName": {
+                  "type": "string",
+                  "title": "Human-readable name"
+                },
+                "labels": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Labels for filtering and organization"
+                },
+                "owner": {
+                  "type": "string",
+                  "title": "Owner identifier (could be user ID, email, etc.)"
+                },
+                "policies": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/definitions/v1alpha1Policy"
+                  },
+                  "title": "Policies for what is allowed to live under this namespace"
+                },
+                "parent": {
+                  "type": "string",
+                  "title": "Name of the parent namespace"
+                }
+              },
+              "title": "Namespace message"
+            }
+          }
+        ],
+        "tags": [
+          "NamespaceService"
+        ]
+      }
+    },
+    "/v1alpha1/namespaces/{name}": {
+      "get": {
+        "summary": "Get Namespace",
+        "operationId": "NamespaceService_GetNamespace",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1Namespace"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "The full name of the namespace to retrieve",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NamespaceService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete Namespace",
+        "operationId": "NamespaceService_DeleteNamespace",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "The full name of the namespace to delete",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NamespaceService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1alpha1ListNamespacesResponse": {
+      "type": "object",
+      "properties": {
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1alpha1Namespace"
+          }
+        },
+        "nextPageToken": {
+          "type": "string",
+          "title": "For pagination"
+        }
+      },
+      "title": "ListNamespacesResponse"
+    },
+    "v1alpha1Namespace": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "e.g., \"acme/go/foo/bar\""
+        },
+        "displayName": {
+          "type": "string",
+          "title": "Human-readable name"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Labels for filtering and organization"
+        },
+        "owner": {
+          "type": "string",
+          "title": "Owner identifier (could be user ID, email, etc.)"
+        },
+        "policies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1alpha1Policy"
+          },
+          "title": "Policies for what is allowed to live under this namespace"
+        },
+        "parent": {
+          "type": "string",
+          "title": "Name of the parent namespace"
+        }
+      },
+      "title": "Namespace message"
+    },
+    "v1alpha1Policy": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "title": "Policy message"
+    }
+  }
+}

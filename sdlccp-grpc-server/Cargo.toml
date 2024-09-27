@@ -1,0 +1,17 @@
+[package]
+name = "sdlccp-grpc-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+prost = "0.13.3"
+prost-types = "0.13.3"
+tokio = { version = "1.40.0", features = ["rt-multi-thread"] }
+tonic = "0.12.2"
+tonic-reflection = "0.12.2"
+tonic-web = "0.12.2"
+tower-http = { version = "0.6.1", features = ["cors"] }
+
+
+[build-dependencies]
+tonic-build = "0.12.2"

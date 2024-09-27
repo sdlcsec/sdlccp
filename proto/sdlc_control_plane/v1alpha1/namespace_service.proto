@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package sdlc_control_plane.v1alpha1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/sdlcsec/sdlccp/proto;proto";
+
+// Namespace message
+message Namespace {
+  string name = 1;             // e.g., "acme/go/foo/bar"
+  string display_name = 2;     // Human-readable name
+  map<string, string> labels = 3; // Labels for filtering and organization
+  string owner = 4;            // Owner identifier (could be user ID, email, etc.)
+  repeated Policy policies = 5; // Policies for what is allowed to live under this namespace
+  string parent = 6;           // Name of the parent namespace
+  // TODO: How should we handle child namespaces?
+}
+
+// Policy message
+message Policy {
+  string id = 1;
+  string description = 2;
+}
+
+// CreateNamespaceRequest
+message CreateNamespaceRequest {
+  Namespace namespace = 1;
+}
+
+// GetNamespaceRequest
+message GetNamespaceRequest {
+  string name = 1; // The full name of the namespace to retrieve
+}
+
+// UpdateNamespaceRequest
+message UpdateNamespaceRequest {
+  Namespace namespace = 1;
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// DeleteNamespaceRequest
+message DeleteNamespaceRequest {
+  string name = 1; // The full name of the namespace to delete
+}
+
+// ListNamespacesRequest
+message ListNamespacesRequest {
+  string parent = 1;                     // Parent namespace to list children from
+  int32 page_size = 2;                   // For pagination
+  string page_token = 3;                 // For pagination
+  string filter = 4;                     // Filter expression based on labels or name
+}
+
+// ListNamespacesResponse
+message ListNamespacesResponse {
+  repeated Namespace namespaces = 1;
+  string next_page_token = 2;            // For pagination
+}
+
+// NamespaceService definition
+service NamespaceService {
+  // Create Namespace
+  rpc CreateNamespace(CreateNamespaceRequest) returns (Namespace) {
+    option (google.api.http) = {
+      post: "/v1alpha1/namespaces"
+      body: "namespace"
+    };
+  }
+
+  // Get Namespace
+  rpc GetNamespace(GetNamespaceRequest) returns (Namespace) {
+    option (google.api.http) = {
+      get: "/v1alpha1/namespaces/{name}"
+    };
+  }
+
+  // Update Namespace
+  rpc UpdateNamespace(UpdateNamespaceRequest) returns (Namespace) {
+    option (google.api.http) = {
+      patch: "/v1alpha1/namespaces/{namespace.name}"
+      body: "namespace"
+    };
+  }
+
+  // Delete Namespace
+  rpc DeleteNamespace(DeleteNamespaceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1alpha1/namespaces/{name}"
+    };
+  }
+
+  // List/Search Namespaces
+  rpc ListNamespaces(ListNamespacesRequest) returns (ListNamespacesResponse) {
+    option (google.api.http) = {
+      get: "/v1alpha1/namespaces"
+    };
+  }
+}
