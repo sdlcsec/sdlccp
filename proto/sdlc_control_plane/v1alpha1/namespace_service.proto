@@ -5,6 +5,7 @@ package sdlc_control_plane.v1alpha1;
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/api/annotations.proto";
+import "sdlc_control_plane/v1alpha1/policy_service.proto";
 
 option go_package = "github.com/sdlcsec/sdlccp/proto;proto";
 
@@ -17,12 +18,6 @@ message Namespace {
   repeated Policy policies = 5; // Policies for what is allowed to live under this namespace
   string parent = 6;           // Name of the parent namespace
   // TODO: How should we handle child namespaces?
-}
-
-// Policy message
-message Policy {
-  string id = 1;
-  string description = 2;
 }
 
 // CreateNamespaceRequest
@@ -58,6 +53,16 @@ message ListNamespacesRequest {
 message ListNamespacesResponse {
   repeated Namespace namespaces = 1;
   string next_page_token = 2;            // For pagination
+}
+
+// ApplyNamespaceRequest
+message ApplyNamespaceRequest {
+  Namespace namespace = 1; // Desired state of the Namespace
+}
+
+// ApplyNamespaceResponse
+message ApplyNamespaceResponse {
+  Namespace namespace = 1; // Resulting Namespace after applying changes
 }
 
 // NamespaceService definition
@@ -96,6 +101,14 @@ service NamespaceService {
   rpc ListNamespaces(ListNamespacesRequest) returns (ListNamespacesResponse) {
     option (google.api.http) = {
       get: "/v1alpha1/namespaces"
+    };
+  }
+
+  // Apply Namespace
+  rpc ApplyNamespace(ApplyNamespaceRequest) returns (ApplyNamespaceResponse) {
+    option (google.api.http) = {
+      put: "/v1alpha1/namespaces/{namespace.name}"
+      body: "namespace"
     };
   }
 }

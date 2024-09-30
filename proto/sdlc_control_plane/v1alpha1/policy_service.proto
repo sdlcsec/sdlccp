@@ -1,0 +1,143 @@
+syntax = "proto3";
+
+package sdlc_control_plane.v1alpha1;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/field_mask.proto";
+
+option go_package = "github.com/sdlcsec/sdlccp/proto;proto";
+
+// Policy message
+message Policy {
+  string id = 1;                      // Unique identifier for the policy
+  string description = 2;             // Description of what the policy enforces
+  repeated Condition conditions = 3;  // Conditions to be checked (identity, timeframe, etc.)
+  repeated string parent_policy_ids = 4; // For hierarchical policies, references to parent policies
+  google.protobuf.Timestamp created_at = 5;  // Timestamp when the policy was created
+  google.protobuf.Timestamp updated_at = 6;  // Timestamp when the policy was last updated
+}
+
+// Condition for Policy
+message Condition {
+  oneof condition_type {
+    IdentityCondition identity_condition = 1;  // Identity of the entity signing the attestation
+    TimeframeCondition timeframe_condition = 2; // Timeframe of attestation creation
+    SubjectCondition subject_condition = 3;    // The subject of the attestation (hash or commit ID)
+    ContentCondition content_condition = 4;    // Content checks on key-value pairs in the attestation
+  }
+}
+
+// Identity Condition
+message IdentityCondition {
+  repeated string allowed_signers = 1;   // List of allowed identities (can be systems, users, build systems, etc.)
+}
+
+// Timeframe Condition
+message TimeframeCondition {
+  google.protobuf.Duration valid_duration = 1; // Timeframe within which the attestation is valid (e.g., 7 days)
+}
+
+// Subject Condition
+message SubjectCondition {
+  string expected_subject = 1;           // Expected subject of the attestation (e.g., hash or commit ID)
+}
+
+// Content Condition
+message ContentCondition {
+  map<string, string> required_key_values = 1;  // Key-value pairs that must exist in the attestation content
+}
+
+// CreatePolicyRequest
+message CreatePolicyRequest {
+  Policy policy = 1;
+}
+
+// GetPolicyRequest
+message GetPolicyRequest {
+  string id = 1;  // ID of the policy to retrieve
+}
+
+// UpdatePolicyRequest
+message UpdatePolicyRequest {
+  Policy policy = 1;
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// DeletePolicyRequest
+message DeletePolicyRequest {
+  string id = 1;  // ID of the policy to delete
+}
+
+// ListPoliciesRequest
+message ListPoliciesRequest {
+  string filter = 1;                  // Filter expression based on identity, subject, etc.
+  int32 page_size = 2;                // Pagination size
+  string page_token = 3;              // Pagination token
+}
+
+// ListPoliciesResponse
+message ListPoliciesResponse {
+  repeated Policy policies = 1;
+  string next_page_token = 2;         // Pagination token for next set
+}
+
+// ApplyPolicyRequest
+message ApplyPolicyRequest {
+  Policy policy = 1; // Desired state of the Policy
+}
+
+// ApplyPolicyResponse
+message ApplyPolicyResponse {
+  Policy policy = 1; // Resulting Policy after applying changes
+}
+
+// PolicyService definition
+service PolicyService {
+  // Create Policy
+  rpc CreatePolicy(CreatePolicyRequest) returns (Policy) {
+    option (google.api.http) = {
+      post: "/v1alpha1/policies"
+      body: "policy"
+    };
+  }
+
+  // Get Policy
+  rpc GetPolicy(GetPolicyRequest) returns (Policy) {
+    option (google.api.http) = {
+      get: "/v1alpha1/policies/{id}"
+    };
+  }
+
+  // Update Policy
+  rpc UpdatePolicy(UpdatePolicyRequest) returns (Policy) {
+    option (google.api.http) = {
+      patch: "/v1alpha1/policies/{policy.id}"
+      body: "policy"
+    };
+  }
+
+  // Delete Policy
+  rpc DeletePolicy(DeletePolicyRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1alpha1/policies/{id}"
+    };
+  }
+
+  // List/Search Policies
+  rpc ListPolicies(ListPoliciesRequest) returns (ListPoliciesResponse) {
+    option (google.api.http) = {
+      get: "/v1alpha1/policies"
+    };
+  }
+
+  // Apply Policy idempotently
+  rpc ApplyPolicy(ApplyPolicyRequest) returns (ApplyPolicyResponse) {
+    option (google.api.http) = {
+      put: "/v1alpha1/poliies/{policy.name}"
+      body: "namespace"
+    };
+  }
+}
