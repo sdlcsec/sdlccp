@@ -6,9 +6,7 @@ use std::{
 use tonic::{Request, Response, Status};
 
 use crate::api::{
-    namespace_service_server::NamespaceService, CreateNamespaceRequest, DeleteNamespaceRequest,
-    GetNamespaceRequest, ListNamespacesRequest, ListNamespacesResponse, Namespace,
-    UpdateNamespaceRequest,
+    namespace_service_server::NamespaceService, ApplyNamespaceRequest, ApplyNamespaceResponse, CreateNamespaceRequest, DeleteNamespaceRequest, GetNamespaceRequest, ListNamespacesRequest, ListNamespacesResponse, Namespace, UpdateNamespaceRequest
 };
 
 /// InMemoryNamespaceService is an in-memory implementation of the NamespaceService for testing purposes
@@ -126,6 +124,15 @@ impl NamespaceService for InMemoryNamespaceService {
             namespaces: filtered_namespaces,
             next_page_token: "".to_string(),
         }))
+    }
+
+    /// Apply Namespace
+    async fn apply_namespace(
+        &self,
+        request: Request<ApplyNamespaceRequest>,
+    ) -> std::result::Result<Response<ApplyNamespaceResponse>, Status> {
+        // TODO: Implement apply logic
+        Err(Status::unimplemented("ApplyNamespace not implemented"))
     }
 }
 

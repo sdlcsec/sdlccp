@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "sdlc_control_plane/v1alpha1/namespace_service.proto",
+    "title": "sdlc_control_plane/v1alpha1/policy_service.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "NamespaceService"
+      "name": "PolicyService"
     }
   ],
   "consumes": [
@@ -16,15 +16,15 @@
     "application/json"
   ],
   "paths": {
-    "/v1alpha1/namespaces": {
+    "/v1alpha1/policies": {
       "get": {
-        "summary": "List/Search Namespaces",
-        "operationId": "NamespaceService_ListNamespaces",
+        "summary": "List/Search Policies",
+        "operationId": "PolicyService_ListPolicies",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1alpha1ListNamespacesResponse"
+              "$ref": "#/definitions/v1alpha1ListPoliciesResponse"
             }
           },
           "default": {
@@ -36,15 +36,15 @@
         },
         "parameters": [
           {
-            "name": "parent",
-            "description": "Parent namespace to list children from",
+            "name": "filter",
+            "description": "Filter expression based on identity, subject, etc.",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
             "name": "pageSize",
-            "description": "For pagination",
+            "description": "Pagination size",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -52,31 +52,24 @@
           },
           {
             "name": "pageToken",
-            "description": "For pagination",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "filter",
-            "description": "Filter expression based on labels or name",
+            "description": "Pagination token",
             "in": "query",
             "required": false,
             "type": "string"
           }
         ],
         "tags": [
-          "NamespaceService"
+          "PolicyService"
         ]
       },
       "post": {
-        "summary": "Create Namespace",
-        "operationId": "NamespaceService_CreateNamespace",
+        "summary": "Create Policy",
+        "operationId": "PolicyService_CreatePolicy",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1alpha1Namespace"
+              "$ref": "#/definitions/v1alpha1Policy"
             }
           },
           "default": {
@@ -88,99 +81,28 @@
         },
         "parameters": [
           {
-            "name": "namespace",
+            "name": "policy",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1alpha1Namespace"
+              "$ref": "#/definitions/v1alpha1Policy"
             }
           }
         ],
         "tags": [
-          "NamespaceService"
+          "PolicyService"
         ]
       }
     },
-    "/v1alpha1/namespaces/{namespace.name}": {
-      "patch": {
-        "summary": "Update Namespace",
-        "operationId": "NamespaceService_UpdateNamespace",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alpha1Namespace"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "namespace.name",
-            "description": "e.g., \"acme/go/foo/bar\"",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "namespace",
-            "description": "Namespace message",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "displayName": {
-                  "type": "string",
-                  "title": "Human-readable name"
-                },
-                "labels": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "title": "Labels for filtering and organization"
-                },
-                "owner": {
-                  "type": "string",
-                  "title": "Owner identifier (could be user ID, email, etc.)"
-                },
-                "policies": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "$ref": "#/definitions/v1alpha1Policy"
-                  },
-                  "title": "Policies for what is allowed to live under this namespace"
-                },
-                "parent": {
-                  "type": "string",
-                  "title": "Name of the parent namespace"
-                }
-              },
-              "title": "Namespace message"
-            }
-          }
-        ],
-        "tags": [
-          "NamespaceService"
-        ]
-      }
-    },
-    "/v1alpha1/namespaces/{name}": {
+    "/v1alpha1/policies/{id}": {
       "get": {
-        "summary": "Get Namespace",
-        "operationId": "NamespaceService_GetNamespace",
+        "summary": "Get Policy",
+        "operationId": "PolicyService_GetPolicy",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1alpha1Namespace"
+              "$ref": "#/definitions/v1alpha1Policy"
             }
           },
           "default": {
@@ -192,20 +114,20 @@
         },
         "parameters": [
           {
-            "name": "name",
-            "description": "The full name of the namespace to retrieve",
+            "name": "id",
+            "description": "ID of the policy to retrieve",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "tags": [
-          "NamespaceService"
+          "PolicyService"
         ]
       },
       "delete": {
-        "summary": "Delete Namespace",
-        "operationId": "NamespaceService_DeleteNamespace",
+        "summary": "Delete Policy",
+        "operationId": "PolicyService_DeletePolicy",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -223,15 +145,88 @@
         },
         "parameters": [
           {
-            "name": "name",
-            "description": "The full name of the namespace to delete",
+            "name": "id",
+            "description": "ID of the policy to delete",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "tags": [
-          "NamespaceService"
+          "PolicyService"
+        ]
+      }
+    },
+    "/v1alpha1/policies/{policy.id}": {
+      "patch": {
+        "summary": "Update Policy",
+        "operationId": "PolicyService_UpdatePolicy",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1Policy"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "policy.id",
+            "description": "Unique identifier for the policy",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "policy",
+            "description": "Policy message",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "title": "Description of what the policy enforces"
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/definitions/v1alpha1Condition"
+                  },
+                  "title": "Conditions to be checked (identity, timeframe, etc.)"
+                },
+                "parentPolicyIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "For hierarchical policies, references to parent policies"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "title": "Timestamp when the policy was created"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "title": "Timestamp when the policy was last updated"
+                }
+              },
+              "title": "Policy message"
+            }
+          }
+        ],
+        "tags": [
+          "PolicyService"
         ]
       }
     }
@@ -313,59 +308,22 @@
       },
       "title": "Identity Condition"
     },
-    "v1alpha1ListNamespacesResponse": {
+    "v1alpha1ListPoliciesResponse": {
       "type": "object",
       "properties": {
-        "namespaces": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1alpha1Namespace"
-          }
-        },
-        "nextPageToken": {
-          "type": "string",
-          "title": "For pagination"
-        }
-      },
-      "title": "ListNamespacesResponse"
-    },
-    "v1alpha1Namespace": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "title": "e.g., \"acme/go/foo/bar\""
-        },
-        "displayName": {
-          "type": "string",
-          "title": "Human-readable name"
-        },
-        "labels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          },
-          "title": "Labels for filtering and organization"
-        },
-        "owner": {
-          "type": "string",
-          "title": "Owner identifier (could be user ID, email, etc.)"
-        },
         "policies": {
           "type": "array",
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1alpha1Policy"
-          },
-          "title": "Policies for what is allowed to live under this namespace"
+          }
         },
-        "parent": {
+        "nextPageToken": {
           "type": "string",
-          "title": "Name of the parent namespace"
+          "title": "Pagination token for next set"
         }
       },
-      "title": "Namespace message"
+      "title": "ListPoliciesResponse"
     },
     "v1alpha1Policy": {
       "type": "object",
